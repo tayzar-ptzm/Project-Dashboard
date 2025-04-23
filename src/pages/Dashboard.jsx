@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import ProjectStatusCards from '../components/ProjectStatusCards';
@@ -8,6 +9,7 @@ import ResourceUtilization from '../components/ResourceUtilization';
 import SettingPage from '../components/SettingPage';
 import { Box, Paper, useTheme, useMediaQuery } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
+
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);

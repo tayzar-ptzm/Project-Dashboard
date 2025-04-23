@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { 
   Paper, 
@@ -301,7 +302,7 @@ const BudgetVsActual = () => {
             boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)'
           }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-              6-Month Cost Trends
+              4-Month Cost Trends
             </Typography>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={lineData}>
