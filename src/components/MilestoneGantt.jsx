@@ -19,8 +19,8 @@ import {
   Payment as PaymentIcon,
   Smartphone as AppIcon,
   CheckCircle,
-  Warning,
-  Error,
+  Autorenew,
+  EventNote,
   KeyboardArrowDown,
   KeyboardArrowUp
 } from '@mui/icons-material';
@@ -35,50 +35,100 @@ const ModernGanttDashboard = () => {
       {
         id: 'MBX',
         name: 'Mobile Banking 3.0',
-        icon: <BankingIcon />,
+        icon: <AppIcon />,
         color: theme.palette.primary.main,
         phases: [
           { 
-            name: 'Beta Launch with all BAU', 
+            name: 'Internal Beta Launch', 
             status: 'completed', 
             date: 'Mar 31, 2025',
             progress: 100,
-            subTasks: ['API', 'Core Modules', 'Mobile', 'UI/UX', 'Backend', 'QA']
+            subTasks: ['API', 'Core Modules', 'Mobile', 'UI/UX', 'Backend']
           },
           { 
             name: 'Interbank Transfer', 
             status: 'in-progress', 
             date: 'Apr 30, 2025', 
             progress: 85,
-            subTasks: ['Faster', 'Priority', 'Report', 'Bug Fix']
+            subTasks: ['Faster', 'Priority', 'Report']
           },
           { 
             name: 'Loan Repayment', 
-            status: 'planned', 
+            status: 'in-progress', 
             date: 'May 31, 2025',
-            progress: 5,
+            progress: 35,
             subTasks: ['Enquiry', 'Schedule', 'Make payment']
+          },
+          { 
+            name: 'New Features', 
+            status: 'planned', 
+            date: 'Aug 15, 2025',
+            progress: 0,
+            subTasks: ['Digital KYC', 'Financial', 'Reset Password']
           }
         ]
       },
       {
         id: 'AB',
         name: 'Agency Banking',
-        icon: <PaymentIcon />,
+        icon: <AppIcon />,
         color: theme.palette.success.main,
         phases: [
           { 
             name: 'Core System', 
             status: 'completed', 
-            date: 'Feb 1 - Apr 30, 2023',
+            date: 'Jan 30, 2025',
             progress: 100,
             subTasks: ['Transaction Engine', 'User Management']
           },
           { 
-            name: 'Partner Integration', 
+            name: 'Transaction Engine', 
+            status: 'completed', 
+            date: 'Feb 15, 2025', 
+            progress: 100,
+            subTasks: ['API Gateway', 'Partner Portal']
+          },
+          { 
+            name: 'AML Checking', 
             status: 'in-progress', 
-            date: 'May 1 - Aug 31, 2023', 
-            progress: 45,
+            date: 'June 15, 2025', 
+            progress: 40,
+            subTasks: ['API Gateway', 'Partner Portal']
+          }
+        ]
+      },
+      {
+        id: 'MMQR',
+        name: 'MMQR Myanmar Pay',
+        icon: <AppIcon />,
+        color: theme.palette.warning.main,
+        phases: [
+          { 
+            name: 'Core System', 
+            status: 'completed', 
+            date: 'Dec 30, 2024',
+            progress: 100,
+            subTasks: ['Transaction Engine', 'QR Management']
+          },
+          { 
+            name: 'QR Generation', 
+            status: 'completed', 
+            date: 'Dec 15, 2024', 
+            progress: 100,
+            subTasks: ['API Gateway', 'Partner Portal']
+          },
+          { 
+            name: 'Tokenization', 
+            status: 'completed', 
+            date: 'Dec 15, 2024', 
+            progress: 100,
+            subTasks: ['API Gateway', 'Partner Portal']
+          },
+          { 
+            name: 'Consumer On-Boarding', 
+            status: 'completed', 
+            date: 'Feb 15, 2025', 
+            progress: 100,
             subTasks: ['API Gateway', 'Partner Portal']
           }
         ]
@@ -88,51 +138,36 @@ const ModernGanttDashboard = () => {
       {
         id: 'AYAP',
         name: 'AYA Pay',
-        icon: <PaymentIcon />,
-        color: theme.palette.warning.main,
-        sprints: [
-          { 
-            name: 'Sprint 1: Core', 
-            status: 'completed', 
-            date: 'Feb 15 - Mar 15, 2023',
-            progress: 100,
-            features: ['Payment Processing', 'User Auth', 'Basic UI']
-          },
-          { 
-            name: 'Sprint 2: Features', 
-            status: 'in-progress', 
-            date: 'Mar 16 - Apr 30, 2023',
-            progress: 60,
-            features: ['Bill Pay', 'QR Code', 'Notifications']
-          },
-          { 
-            name: 'Sprint 3: Enhancements', 
-            status: 'planned', 
-            date: 'May 1 - Jun 15, 2023',
-            progress: 0,
-            features: ['Rewards', 'Analytics', 'Dark Mode']
-          }
-        ]
-      },
-      {
-        id: 'PA',
-        name: 'Partner App',
         icon: <AppIcon />,
-        color: theme.palette.secondary.main,
+        color: theme.palette.error.main,
         sprints: [
           { 
-            name: 'Sprint 1: Foundation', 
-            status: 'in-progress', 
-            date: 'Mar 1 - Apr 15, 2023',
-            progress: 30,
-            features: ['Onboarding', 'Dashboard', 'Auth']
+            name: 'Sprint 56: Single Device', 
+            status: 'completed', 
+            date: 'Feb 2, 2025',
+            progress: 100,
+            features: ['Payment Processing', 'Single Device', 'Basic UI']
           },
           { 
-            name: 'Sprint 2: Transactions', 
+            name: 'Sprint 57: Telco Data Packs', 
+            status: 'completed', 
+            date: 'Mar 16, 2025',
+            progress: 100,
+            features: ['ATOM Data Pack', 'QR Code', 'Notifications']
+          },
+          { 
+            name: 'Sprint 58: Visa Infinite', 
+            status: 'in-progress', 
+            date: 'May 12, 2025',
+            progress: 30,
+            features: ['Rewards', 'Mote Phoe', 'Biller']
+          },
+          { 
+            name: 'Sprint 59: Enhancements', 
             status: 'planned', 
-            date: 'Apr 16 - May 31, 2023',
+            date: 'May 27, 2025',
             progress: 0,
-            features: ['Payment Flow', 'Reporting', 'Settings']
+            features: ['Branch Code', 'Township', 'Payment']
           }
         ]
       }
@@ -142,8 +177,8 @@ const ModernGanttDashboard = () => {
   const StatusBadge = ({ status }) => {
     const config = {
       completed: { icon: <CheckCircle fontSize="small" />, color: 'success', label: 'Done' },
-      'in-progress': { icon: <Warning fontSize="small" />, color: 'warning', label: 'In Progress' },
-      planned: { icon: <Error fontSize="small" />, color: 'info', label: 'Planned' }
+      'in-progress': { icon: <Autorenew fontSize="small" />, color: 'warning', label: 'In Progress' },
+      planned: { icon: <EventNote fontSize="small" />, color: 'info', label: 'Planned' }
     };
 
     return (

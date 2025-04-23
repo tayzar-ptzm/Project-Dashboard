@@ -37,7 +37,7 @@ const teamMembers = [
     avatar: '/avatars/lwin.jpg',
     role: 'Senior Mobile Developer',
     projects: ['MBX', 'AYAP', 'MMQR'],
-    workload: 85, // percentage
+    workload: 65, // percentage
     skills: ['React Native', 'Flutter', 'iOS', 'Android'],
     utilization: [
       { project: 'MBX', hours: 30 },
@@ -50,8 +50,36 @@ const teamMembers = [
     name: 'Saw Nay Thu Aung',
     avatar: '/avatars/john.jpg',
     role: 'Senior Backend Developer',
+    projects: ['MBX', 'AB','MMQR'],
+    workload: 85,
+    skills: ['Node.js', 'Python', 'AWS', 'Microservices'],
+    utilization: [
+      { project: 'MBX', hours: 25 },
+      { project: 'AB', hours: 40 },
+      { project: 'MMQR', hours: 15 }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Sai Lao Seng',
+    avatar: '/avatars/john.jpg',
+    role: 'Senior Backend Developer',
+    projects: ['MBX', 'AB', 'MMQR'],
+    workload: 75,
+    skills: ['Node.js', 'Python', 'AWS', 'Microservices'],
+    utilization: [
+      { project: 'MBX', hours: 25 },
+      { project: 'AB', hours: 40 },
+      { project: 'MMQR', hours: 15 }
+    ]
+  },
+  {
+    id: 4,
+    name: 'May Myat Mon',
+    avatar: '/avatars/john.jpg',
+    role: 'Senior Web Developer',
     projects: ['MBX', 'AB'],
-    workload: 65,
+    workload: 85,
     skills: ['Node.js', 'Python', 'AWS', 'Microservices'],
     utilization: [
       { project: 'MBX', hours: 25 },
@@ -59,7 +87,7 @@ const teamMembers = [
     ]
   },
   {
-    id: 3,
+    id: 5,
     name: 'Khin Myo Win',
     avatar: '/avatars/sarah.jpg',
     role: 'QA Engineer',
@@ -73,18 +101,16 @@ const teamMembers = [
     ]
   },
   {
-    id: 4,
+    id: 6,
     name: 'Santi',
     avatar: '/avatars/michael.jpg',
     role: 'DevOps Engineer',
-    projects: ['MBX', 'AYAP', 'AB', 'APG'],
-    workload: 90,
+    projects: ['MBX', 'AYAP'],
+    workload: 50,
     skills: ['AWS', 'Docker', 'Kubernetes', 'CI/CD'],
     utilization: [
       { project: 'MBX', hours: 20 },
-      { project: 'AYAP', hours: 30 },
-      { project: 'AB', hours: 25 },
-      { project: 'APG', hours: 15 }
+      { project: 'AYAP', hours: 30 }
     ]
   }
 ];
@@ -97,33 +123,33 @@ const projectTeams = {
     qa: 2,
     devops: 1,
     status: 'active',
-    progress: 65,
+    progress: 75,
     startDate: '2023-01-15',
-    endDate: '2023-09-30',
+    endDate: '2025-09-30',
     
   },
-  AYAPAY: {
+  AP: {
     name: "AYA Pay",
     developers: 4,
     designers: 2,
     qa: 3,
     devops: 1,
     status: 'active',
-    progress: 42,
+    progress: 55,
     startDate: '2023-03-10',
-    endDate: '2023-11-15',
+    endDate: '2025-11-15',
    
   },
-  AGENCY: {
+  AB: {
     name: "Agency Banking",
     developers: 2,
     designers: 1,
     qa: 1,
     devops: 1,
     status: 'active',
-    progress: 18,
+    progress: 78,
     startDate: '2023-05-01',
-    endDate: '2023-12-20',
+    endDate: '2025-12-20',
   }
 };
 
@@ -267,7 +293,7 @@ const ResourceUtilization = () => {
             <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 600 }}>
               Workload Distribution
             </Typography>
-            <Box sx={{ height: 300 }}>
+            <Box sx={{ height: 300, width: 400 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={teamMembers}
@@ -312,7 +338,7 @@ const ResourceUtilization = () => {
             <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 600 }}>
               Project Allocation
             </Typography>
-            <Box sx={{ height: 300 }}>
+            <Box sx={{ height: 300, width: 300 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={projectWorkload}

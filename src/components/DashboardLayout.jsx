@@ -152,14 +152,14 @@ const DashboardLayout = ({ children, activeTab, onTabChange }) => {
                 component="div"
                 sx={{
                   fontWeight: 700,
-                  letterSpacing: '0.5px',
+                  letterSpacing: '0px',
                   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   display: 'inline-block'
                 }}
               >
-                PROJECT DASHBOARD
+                INNOLABS DASHBOARD
               </Typography>
             )}
           </Box>

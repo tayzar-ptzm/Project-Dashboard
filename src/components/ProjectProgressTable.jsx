@@ -123,7 +123,7 @@ const projects = [
     status: 'off-track',
     progress: 78,
     deadline: '2025-09-15',
-    roadblock: 'Regulatory approval pending',
+    roadblock: 'AML SOW approval pending',
     businessImpact: 'Critical',
     tasks: [
       {
@@ -149,7 +149,7 @@ const projects = [
     status: 'on-track',
     progress: 45,
     deadline: '2025-5-31', // Ongoing progressive project
-    roadblock: 'Third-party API delays',
+    roadblock: 'None',
     businessImpact: 'High',
     methodology: 'agile',
     sprintDuration: '2 weeks',
@@ -686,8 +686,8 @@ const ProjectProgressDashboard = () => {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight="600">
-          Project Progress Tracker
+        <Typography variant="h5" fontWeight="500">
+          Project Detail Progress
         </Typography>
         <Box>
           <Chip label="All Projects" variant="outlined" sx={{ mr: 1 }} />

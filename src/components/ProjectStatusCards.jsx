@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import { 
   CheckCircle, 
-  Warning, 
-  Error,
+  ReportProblem, 
+  Cancel,
   ArrowUpward,
   ArrowDownward,
   TrendingFlat
@@ -68,8 +68,8 @@ const StatusCard = ({ project }) => {
             height: 40
           }}>
             {project.status === 'on-track' && <CheckCircle />}
-            {project.status === 'at-risk' && <Warning />}
-            {project.status === 'off-track' && <Error />}
+            {project.status === 'off-track' && <Cancel />}
+            {project.status === 'at-risk' && <ReportProblem />}
           </Avatar>
           <Box>
             <Typography variant="subtitle1" fontWeight="600">
@@ -128,12 +128,12 @@ const StatusSummaryCard = ({ status, count }) => {
     },
     'at-risk': {
       title: 'At Risk',
-      icon: <Warning />,
+      icon: <ReportProblem />,
       color: statusColors['at-risk']
     },
     'off-track': {
       title: 'Off Track',
-      icon: <Error />,
+      icon: <Cancel />,
       color: statusColors['off-track']
     }
   };
@@ -270,8 +270,8 @@ const ProjectStatusCards = () => {
               color: statusColors[status].dark
             }}>
               {status === 'on-track' && <CheckCircle sx={{ mr: 1 }} />}
-              {status === 'at-risk' && <Warning sx={{ mr: 1 }} />}
-              {status === 'off-track' && <Error sx={{ mr: 1 }} />}
+              {status === 'at-risk' && <ReportProblem sx={{ mr: 1 }} />}
+              {status === 'off-track' && <Cancel sx={{ mr: 1 }} />}
               {status === 'on-track' ? 'On Track' : status === 'at-risk' ? 'At Risk' : 'Off Track'} 
               <Chip 
                 label={projects.length}
