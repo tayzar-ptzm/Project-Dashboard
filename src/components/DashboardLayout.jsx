@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useContext } from 'react';
 import { 
   AppBar, Toolbar, Typography, Box, styled, useTheme, 
