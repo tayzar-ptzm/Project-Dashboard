@@ -24,6 +24,12 @@ import {
   KeyboardArrowDown,
   KeyboardArrowUp
 } from '@mui/icons-material';
+import { ReactComponent as OnetimeIcon } from '../images/onetime.svg';
+import { ReactComponent as ProgressiveIcon } from '../images/progress.svg';
+import { ReactComponent as MMQRIcon } from '../images/MMQR.svg';
+import { ReactComponent as MBXIcon } from '../images/MBX.svg';
+import { ReactComponent as APIcon } from '../images/AP.svg';
+import { ReactComponent as AGIcon } from '../images/AP.svg';
 
 const ModernGanttDashboard = () => {
   const theme = useTheme();
@@ -35,7 +41,7 @@ const ModernGanttDashboard = () => {
       {
         id: 'MBX',
         name: 'Mobile Banking 3.0',
-        icon: <AppIcon />,
+        icon: <MBXIcon />,
         color: theme.palette.primary.main,
         phases: [
           { 
@@ -71,7 +77,7 @@ const ModernGanttDashboard = () => {
       {
         id: 'AB',
         name: 'Agency Banking',
-        icon: <AppIcon />,
+        icon: <APIcon />,
         color: theme.palette.success.main,
         phases: [
           { 
@@ -100,7 +106,7 @@ const ModernGanttDashboard = () => {
       {
         id: 'MMQR',
         name: 'MMQR Myanmar Pay',
-        icon: <AppIcon />,
+        icon: <MMQRIcon />,
         color: theme.palette.warning.main,
         phases: [
           { 
@@ -138,7 +144,7 @@ const ModernGanttDashboard = () => {
       {
         id: 'AYAP',
         name: 'AYA Pay',
-        icon: <AppIcon />,
+        icon: <APIcon />,
         color: theme.palette.error.main,
         sprints: [
           { 
@@ -258,11 +264,11 @@ const ModernGanttDashboard = () => {
           onClick={() => toggleExpand(project.id)}
         >
           <Avatar sx={{ 
-            bgcolor: project.color, 
+            bgcolor: 'transparent', 
             mr: 2, 
-            width: 36, 
-            height: 36,
-            color: theme.palette.getContrastText(project.color)
+            width: 40, 
+            height: 40,
+            color: theme.palette.secondary.contrastText
           }}>
             {project.icon}
           </Avatar>
@@ -342,12 +348,13 @@ const ModernGanttDashboard = () => {
       <Box sx={{ mb: 4 }}>
         <Stack direction="row" alignItems="center" spacing={2} mb={2}>
           <Avatar sx={{ 
-            bgcolor: theme.palette.primary.main, 
+            bgcolor: 'transparent', 
             width: 40, 
             height: 40,
-            color: theme.palette.primary.contrastText
+            color: theme.palette.secondary.contrastText
+            
           }}>
-            <BankingIcon />
+            <OnetimeIcon />
           </Avatar>
           <Typography variant="h6" fontWeight="700">
             One-Time Development
@@ -363,12 +370,12 @@ const ModernGanttDashboard = () => {
       <Box>
         <Stack direction="row" alignItems="center" spacing={2} mb={2}>
           <Avatar sx={{ 
-            bgcolor: theme.palette.secondary.main, 
+            bgcolor: 'transparent', 
             width: 40, 
             height: 40,
             color: theme.palette.secondary.contrastText
           }}>
-            <AppIcon />
+            <ProgressiveIcon />
           </Avatar>
           <Typography variant="h6" fontWeight="700">
             Progressive Development

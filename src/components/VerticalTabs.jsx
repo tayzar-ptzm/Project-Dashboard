@@ -21,6 +21,8 @@ import {
   People as ResourcesIcon,
   Settings as SettingsIcon
 } from '@mui/icons-material';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
+
 
 const StyledListItemButton = styled(ListItemButton)(({ theme, selected }) => ({
   borderRadius: 8,
@@ -51,7 +53,7 @@ const VerticalTabs = ({ mobileOpen, handleDrawerToggle, activeTab, onTabChange }
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const tabs = [
-    { label: 'Overview', icon: <DashboardIcon /> },
+    { label: 'Dashboard', icon: <DashboardIcon /> },
     { label: 'Milestones', icon: <MilestonesIcon /> },
     { label: 'Progress', icon: <ProgressIcon /> },
     { label: 'Budget', icon: <BudgetIcon /> },
@@ -106,6 +108,12 @@ const VerticalTabs = ({ mobileOpen, handleDrawerToggle, activeTab, onTabChange }
         <Typography variant="caption" color="text.secondary">
           v1.0.0
         </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+        <LightbulbOutlinedIcon fontSize="small" color="warning" />
+        <Typography variant="caption" color="text.secondary">
+          powered by <strong>Innovation Labs</strong>
+        </Typography>
+        </Box>
       </Box>
     </Box>
   );
