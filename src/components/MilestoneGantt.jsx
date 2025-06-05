@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -12,382 +12,627 @@ import {
   LinearProgress,
   Grid,
   IconButton,
-  Collapse
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Tooltip,
+  keyframes
 } from '@mui/material';
 import {
-  AccountBalance as BankingIcon,
-  Payment as PaymentIcon,
-  Smartphone as AppIcon,
   CheckCircle,
   Autorenew,
   EventNote,
-  KeyboardArrowDown,
-  KeyboardArrowUp
+  Warning,
+  ExpandMore
 } from '@mui/icons-material';
-import { ReactComponent as OnetimeIcon } from '../images/onetime.svg';
-import { ReactComponent as ProgressiveIcon } from '../images/progress.svg';
-import { ReactComponent as MMQRIcon } from '../images/MMQR.svg';
+import { motion } from 'framer-motion';
 import { ReactComponent as MBXIcon } from '../images/MBX.svg';
 import { ReactComponent as APIcon } from '../images/AP.svg';
 import { ReactComponent as AGIcon } from '../images/AP.svg';
+import { ReactComponent as MMQRIcon } from '../images/MMQR.svg';
 
-const ModernGanttDashboard = () => {
+// Animation keyframes
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+const ProjectGanttDashboard = () => {
   const theme = useTheme();
-  const [expandedProject, setExpandedProject] = React.useState(null);
+  const [selectedPhase, setSelectedPhase] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [hoveredPhase, setHoveredPhase] = useState(null);
 
-  // Project data
-  const projects = {
-    oneTime: [
-      {
-        id: 'MBX',
-        name: 'Mobile Banking 3.0',
-        icon: <MBXIcon />,
-        color: theme.palette.primary.main,
-        phases: [
-          { 
-            name: 'Internal Beta Launch', 
-            status: 'completed', 
-            date: 'Mar 31, 2025',
-            progress: 100,
-            subTasks: ['API', 'Core Modules', 'Mobile', 'UI/UX', 'Backend']
-          },
-          { 
-            name: 'Interbank Transfer', 
-            status: 'in-progress', 
-            date: 'Apr 30, 2025', 
-            progress: 85,
-            subTasks: ['Faster', 'Priority', 'Report']
-          },
-          { 
-            name: 'Loan Repayment', 
-            status: 'in-progress', 
-            date: 'May 31, 2025',
-            progress: 35,
-            subTasks: ['Enquiry', 'Schedule', 'Make payment']
-          },
-          { 
-            name: 'New Features', 
-            status: 'planned', 
-            date: 'Aug 15, 2025',
-            progress: 0,
-            subTasks: ['Digital KYC', 'Financial', 'Reset Password']
-          }
-        ]
-      },
-      {
-        id: 'AB',
-        name: 'Agency Banking',
-        icon: <APIcon />,
-        color: theme.palette.success.main,
-        phases: [
-          { 
-            name: 'Core System', 
-            status: 'completed', 
-            date: 'Jan 30, 2025',
-            progress: 100,
-            subTasks: ['Transaction Engine', 'User Management']
-          },
-          { 
-            name: 'Transaction Engine', 
-            status: 'completed', 
-            date: 'Feb 15, 2025', 
-            progress: 100,
-            subTasks: ['API Gateway', 'Partner Portal']
-          },
-          { 
-            name: 'AML Checking', 
-            status: 'in-progress', 
-            date: 'June 15, 2025', 
-            progress: 40,
-            subTasks: ['API Gateway', 'Partner Portal']
-          }
-        ]
-      },
-      {
-        id: 'MMQR',
-        name: 'MMQR Myanmar Pay',
-        icon: <MMQRIcon />,
-        color: theme.palette.warning.main,
-        phases: [
-          { 
-            name: 'Core System', 
-            status: 'completed', 
-            date: 'Dec 30, 2024',
-            progress: 100,
-            subTasks: ['Transaction Engine', 'QR Management']
-          },
-          { 
-            name: 'QR Generation', 
-            status: 'completed', 
-            date: 'Dec 15, 2024', 
-            progress: 100,
-            subTasks: ['API Gateway', 'Partner Portal']
-          },
-          { 
-            name: 'Tokenization', 
-            status: 'completed', 
-            date: 'Dec 15, 2024', 
-            progress: 100,
-            subTasks: ['API Gateway', 'Partner Portal']
-          },
-          { 
-            name: 'Consumer On-Boarding', 
-            status: 'completed', 
-            date: 'Feb 15, 2025', 
-            progress: 100,
-            subTasks: ['API Gateway', 'Partner Portal']
-          }
-        ]
-      }
-    ],
-    progressive: [
-      {
-        id: 'AYAP',
-        name: 'AYA Pay',
-        icon: <APIcon />,
-        color: theme.palette.error.main,
-        sprints: [
-          { 
-            name: 'Sprint 56: Single Device', 
-            status: 'completed', 
-            date: 'Feb 2, 2025',
-            progress: 100,
-            features: ['Payment Processing', 'Single Device', 'Basic UI']
-          },
-          { 
-            name: 'Sprint 57: Telco Data Packs', 
-            status: 'completed', 
-            date: 'Mar 16, 2025',
-            progress: 100,
-            features: ['ATOM Data Pack', 'QR Code', 'Notifications']
-          },
-          { 
-            name: 'Sprint 58: Visa Infinite', 
-            status: 'in-progress', 
-            date: 'May 12, 2025',
-            progress: 30,
-            features: ['Rewards', 'Mote Phoe', 'Biller']
-          },
-          { 
-            name: 'Sprint 59: Enhancements', 
-            status: 'planned', 
-            date: 'May 27, 2025',
-            progress: 0,
-            features: ['Branch Code', 'Township', 'Payment']
-          }
-        ]
-      }
-    ]
+  // Months for the timeline
+  const currentYear = new Date().getFullYear();
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  // Project icons mapping
+  const projectIcons = {
+    'mbx': <MBXIcon width={24} height={24} />,
+    'agency': <APIcon width={24} height={24} />,
+    'mmqr': <MMQRIcon width={24} height={24} />,
+    'ag': <AGIcon width={24} height={24} />
   };
+
+  // Sample project data with colors and icons
+  const projects = [
+    {
+      id: 'mbx',
+      name: 'Mobile Banking 3.0',
+      color: '#6366F1', // Indigo
+      icon: projectIcons['mbx'],
+      phases: [
+        {
+          id: 'beta',
+          name: 'Internal Beta',
+          status: 'completed',
+          planned: { start: 'Jan 2025', end: 'Mar 2025' },
+          actual: { start: 'Jan 2025', end: 'Mar 2025' },
+          progress: 100,
+          tasks: ['API Integration', 'Core Modules', 'Mobile App', 'UI/UX Design']
+        },
+        {
+          id: 'transfer',
+          name: 'Interbank Transfer',
+          status: 'in-progress',
+          planned: { start: 'Mar 2025', end: 'May 2025' },
+          actual: { start: 'Apr 2025', end: 'Jun 2025' },
+          progress: 75,
+          tasks: ['Faster Payments', 'Priority Processing', 'Transaction Reports']
+        },
+        {
+          id: 'loan',
+          name: 'Loan Repayment',
+          status: 'in-progress',
+          planned: { start: 'May 2025', end: 'Jul 2025' },
+          actual: { start: 'Jun 2025', end: null },
+          progress: 30,
+          tasks: ['Loan Enquiry', 'Repayment Schedule', 'Payment Processing']
+        }
+      ]
+    },
+    {
+      id: 'agency',
+      name: 'Agency Banking',
+      color: '#10B981', // Emerald
+      icon: projectIcons['agency'],
+      phases: [
+        {
+          id: 'core',
+          name: 'Core System',
+          status: 'completed',
+          planned: { start: 'Feb 2025', end: 'Apr 2025' },
+          actual: { start: 'Feb 2025', end: 'Apr 2025' },
+          progress: 100,
+          tasks: ['Transaction Engine', 'User Management']
+        },
+        {
+          id: 'aml',
+          name: 'AML Checking',
+          status: 'in-progress',
+          planned: { start: 'Apr 2025', end: 'Jun 2025' },
+          actual: { start: 'May 2025', end: null },
+          progress: 45,
+          tasks: ['Compliance Checks', 'Risk Assessment', 'Reporting']
+        }
+      ]
+    },
+    {
+      id: 'mmqr',
+      name: 'MMQR Myanmar Pay',
+      color: '#F59E0B', // Amber
+      icon: projectIcons['mmqr'],
+      phases: [
+        {
+          id: 'qr',
+          name: 'QR Generation',
+          status: 'completed',
+          planned: { start: 'Jan 2025', end: 'Feb 2025' },
+          actual: { start: 'Jan 2025', end: 'Feb 2025' },
+          progress: 100,
+          tasks: ['QR Code API', 'Merchant Portal', 'Transaction Processing']
+        },
+        {
+          id: 'token',
+          name: 'Tokenization',
+          status: 'in-progress',
+          planned: { start: 'Mar 2025', end: 'May 2025' },
+          actual: { start: 'Apr 2025', end: 'Jun 2025' },
+          progress: 65,
+          tasks: ['Token Engine', 'Security Layer', 'API Integration']
+        }
+      ]
+    }
+  ];
 
   const StatusBadge = ({ status }) => {
     const config = {
-      completed: { icon: <CheckCircle fontSize="small" />, color: 'success', label: 'Done' },
-      'in-progress': { icon: <Autorenew fontSize="small" />, color: 'warning', label: 'In Progress' },
-      planned: { icon: <EventNote fontSize="small" />, color: 'info', label: 'Planned' }
+      completed: { icon: <CheckCircle fontSize="small" />, color: '#10B981', label: 'Completed' },
+      'in-progress': { icon: <Autorenew fontSize="small" />, color: '#3B82F6', label: 'In Progress' },
+      planned: { icon: <EventNote fontSize="small" />, color: '#6366F1', label: 'Planned' },
+      behind: { icon: <Warning fontSize="small" />, color: '#EF4444', label: 'Behind' }
     };
 
     return (
-      <Chip
-        icon={config[status].icon}
-        label={config[status].label}
-        size="small"
-        color={config[status].color}
-        variant="outlined"
-        sx={{ borderRadius: 1, fontSize: '0.75rem' }}
-      />
-    );
-  };
-
-  const GanttBar = ({ progress, color, dateRange }) => {
-    return (
-      <Box sx={{ 
-        width: '100%',
-        position: 'relative',
-        height: 24,
-        bgcolor: theme.palette.grey[100],
-        borderRadius: 12,
-        overflow: 'hidden'
-      }}>
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          sx={{
-            height: '100%',
-            bgcolor: 'transparent',
-            '.MuiLinearProgress-bar': {
-              bgcolor: color,
-              borderRadius: 12
-            }
+      <motion.div whileHover={{ scale: 1.05 }}>
+        <Chip
+          icon={config[status].icon}
+          label={config[status].label}
+          size="small"
+          sx={{ 
+            borderRadius: 2,
+            fontSize: '0.75rem',
+            bgcolor: `${config[status].color}20`,
+            color: config[status].color,
+            border: `1px solid ${config[status].color}`
           }}
         />
-        <Typography variant="caption" sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          color: theme.palette.getContrastText(color),
-          fontWeight: 'bold',
-          fontSize: '0.65rem'
-        }}>
-          {dateRange}
-        </Typography>
-      </Box>
+      </motion.div>
     );
   };
 
-  const toggleExpand = (projectId) => {
-    setExpandedProject(expandedProject === projectId ? null : projectId);
+  const getMonthIndex = (monthYear) => {
+    if (!monthYear) return null;
+    const [month] = monthYear.split(' ');
+    return months.indexOf(month);
   };
 
-  const ProjectCard = ({ project, type }) => {
-    const items = type === 'oneTime' ? project.phases : project.sprints;
+  const calculateBarPosition = (start, end) => {
+    const startIndex = getMonthIndex(start);
+    const endIndex = getMonthIndex(end);
     
-    return (
-      <Paper sx={{ 
-        mb: 2, 
-        borderRadius: 2,
-        overflow: 'hidden',
-        border: `1px solid ${theme.palette.divider}`,
-        '&:hover': {
-          boxShadow: theme.shadows[2]
-        }
-      }}>
-        <Box 
-          sx={{ 
-            display: 'flex',
-            alignItems: 'center',
-            p: 2,
-            cursor: 'pointer',
-            bgcolor: theme.palette.background.paper
-          }}
-          onClick={() => toggleExpand(project.id)}
-        >
-          <Avatar sx={{ 
-            bgcolor: 'transparent', 
-            mr: 2, 
-            width: 40, 
-            height: 40,
-            color: theme.palette.secondary.contrastText
-          }}>
-            {project.icon}
-          </Avatar>
-          <Typography fontWeight="600" flexGrow={1}>{project.name}</Typography>
-          <IconButton size="small">
-            {expandedProject === project.id ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-          </IconButton>
-        </Box>
-
-        <Collapse in={expandedProject === project.id}>
-          <Box sx={{ p: 2, pt: 0 }}>
-            <Grid container spacing={2}>
-              {(type === 'oneTime' ? project.phases : project.sprints).map((item, idx) => (
-                <Grid item xs={12} sm={6} md={4} key={idx}>
-                  <Box sx={{ 
-                    height: '100%',
-                    p: 2,
-                    border: `1px solid ${theme.palette.divider}`,
-                    borderRadius: 1,
-                    bgcolor: theme.palette.background.default
-                  }}>
-                    <Typography variant="subtitle2" fontWeight="600" gutterBottom>
-                      {item.name}
-                    </Typography>
-                    
-                    <GanttBar 
-                      progress={item.progress} 
-                      color={project.color} 
-                      dateRange={item.date.split(' - ')[0].replace(', 2023', '')} 
-                    />
-                    
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5, mb: 1.5 }}>
-                      <StatusBadge status={item.status} />
-                      <Chip 
-                        label={`${item.progress}%`} 
-                        size="small" 
-                        sx={{ 
-                          ml: 1,
-                          bgcolor: theme.palette.grey[100],
-                          fontWeight: 'bold',
-                          fontSize: '0.75rem'
-                        }} 
-                      />
-                    </Box>
-                    
-                    <Typography variant="caption" color="text.secondary" display="block" mb={1}>
-                      {type === 'oneTime' ? 'TASKS:' : 'FEATURES:'}
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(type === 'oneTime' ? item.subTasks : item.features).map((task, i) => (
-                        <Chip
-                          key={i}
-                          label={task}
-                          size="small"
-                          sx={{ 
-                            bgcolor: theme.palette.grey[100],
-                            fontSize: '0.7rem',
-                            height: 24
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </Collapse>
-      </Paper>
-    );
+    if (startIndex === null || endIndex === null) return null;
+    
+    return {
+      left: `${(startIndex / months.length) * 100}%`,
+      width: `${((endIndex - startIndex + 1) / months.length) * 100}%`
+    };
   };
+
+  const handlePhaseClick = (phase) => {
+    setSelectedPhase(phase);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const isBehindSchedule = (phase) => {
+    if (!phase.actual.end) return true;
+    const plannedEnd = getMonthIndex(phase.planned.end);
+    const actualEnd = getMonthIndex(phase.actual.end);
+    return actualEnd > plannedEnd;
+  };
+
+  const AnimatedBar = ({ color, position, isActive }) => (
+    <motion.div
+      initial={{ width: 0 }}
+      animate={{ width: position.width }}
+      transition={{ duration: 0.5 }}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: position.left,
+        height: 8,
+        transform: 'translateY(-50%)',
+        backgroundColor: color,
+        borderRadius: 4,
+        boxShadow: isActive ? `0 0 8px ${color}` : 'none',
+        zIndex: isActive ? 2 : 1
+      }}
+    />
+  );
 
   return (
-    <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
-      {/* One-Time Projects Section */}
-      <Box sx={{ mb: 4 }}>
-        <Stack direction="row" alignItems="center" spacing={2} mb={2}>
-          <Avatar sx={{ 
-            bgcolor: 'transparent', 
-            width: 40, 
-            height: 40,
-            color: theme.palette.secondary.contrastText
-            
+    <Box sx={{ 
+      p: { xs: 1, sm: 3 },
+      background: 'linear-gradient(120deg, #F9FAFB 0%, #F3F4F6 100%)',
+      minHeight: '100vh'
+    }}>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Typography variant="h4" gutterBottom sx={{ 
+          mb: 3, 
+          fontWeight: 800,
+          background: 'linear-gradient(90deg, #6366F1 0%, #10B981 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          display: 'inline-block'
+        }}>
+          Project Milestones Timeline
+        </Typography>
+        
+      </motion.div>
+
+      {projects.map((project) => (
+        <motion.div
+          key={project.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 * projects.indexOf(project) }}
+        >
+          <Paper sx={{ 
+            mb: 4,
+            borderRadius: 3,
+            overflow: 'hidden',
+            boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+            border: '1px solid rgba(0,0,0,0.05)'
           }}>
-            <OnetimeIcon />
-          </Avatar>
-          <Typography variant="h6" fontWeight="700">
-            One-Time Development
-          </Typography>
-        </Stack>
+            {/* Project Header */}
+            <Box sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              p: 2,
+              bgcolor: `${project.color}10`,
+              borderBottom: `1px solid ${project.color}20`
+            }}>
+              <Avatar sx={{ 
+                bgcolor: project.color,
+                color: 'white',
+                mr: 2,
+                width: 40,
+                height: 40
+              }}>
+                {project.icon}
+              </Avatar>
+              <Typography variant="h6" fontWeight={700} sx={{ color: project.color }}>
+                {project.name}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }} />
+              <Chip 
+                label={`${project.phases.length} phases`} 
+                size="small" 
+                sx={{ 
+                  bgcolor: `${project.color}20`,
+                  color: project.color,
+                  fontWeight: 600
+                }} 
+              />
+            </Box>
 
-        {projects.oneTime.map((project) => (
-          <ProjectCard key={project.id} project={project} type="oneTime" />
-        ))}
-      </Box>
+            {/* Months Header */}
+            <Box sx={{ 
+              display: 'flex',
+              position: 'sticky',
+              left: 0,
+              bgcolor: 'background.paper',
+              zIndex: 2,
+              borderBottom: `2px solid ${theme.palette.divider}`
+            }}>
+              <Box sx={{ 
+                width: 200, 
+                minWidth: 200, 
+                py: 2,
+                pl: 3,
+                fontWeight: 600,
+                color: '#6B7280'
+              }}>
+                Phase Name
+              </Box>
+              {months.map((month) => (
+                <Box key={month} sx={{
+                  flex: 1,
+                  minWidth: 80,
+                  textAlign: 'center',
+                  py: 2,
+                  borderRight: `1px solid ${theme.palette.divider}`,
+                  fontWeight: 600,
+                  color: '#6B7280',
+                  bgcolor: '#F9FAFB'
+                }}>
+                  {month}
+                </Box>
+              ))}
+            </Box>
 
-      {/* Progressive Projects Section */}
-      <Box>
-        <Stack direction="row" alignItems="center" spacing={2} mb={2}>
-          <Avatar sx={{ 
-            bgcolor: 'transparent', 
-            width: 40, 
-            height: 40,
-            color: theme.palette.secondary.contrastText
-          }}>
-            <ProgressiveIcon />
-          </Avatar>
-          <Typography variant="h6" fontWeight="700">
-            Progressive Development
-          </Typography>
-        </Stack>
+            {/* Phases Rows */}
+            {project.phases.map((phase) => {
+              const plannedPos = calculateBarPosition(phase.planned.start, phase.planned.end);
+              const actualPos = calculateBarPosition(phase.actual.start, phase.actual.end);
+              const isBehind = isBehindSchedule(phase);
+              const isHovered = hoveredPhase === phase.id;
 
-        {projects.progressive.map((project) => (
-          <ProjectCard key={project.id} project={project} type="progressive" />
-        ))}
-      </Box>
+              return (
+                <motion.div
+                  key={phase.id}
+                  whileHover={{ 
+                    backgroundColor: `${project.color}08`,
+                    transition: { duration: 0.2 }
+                  }}
+                  onMouseEnter={() => setHoveredPhase(phase.id)}
+                  onMouseLeave={() => setHoveredPhase(null)}
+                >
+                  <Box sx={{ 
+                    display: 'flex',
+                    borderBottom: `1px solid ${theme.palette.divider}`,
+                    position: 'relative',
+                    bgcolor: isHovered ? `${project.color}08` : 'transparent',
+                    transition: 'background-color 0.2s ease'
+                  }}>
+                    {/* Phase Name Column */}
+                    <Box sx={{ 
+                      width: 200,
+                      minWidth: 200,
+                      display: 'flex',
+                      alignItems: 'center',
+                      p: 2,
+                      pl: 3,
+                      position: 'sticky',
+                      left: 0,
+                      bgcolor: isHovered ? `${project.color}08` : 'background.paper',
+                      zIndex: 1,
+                      cursor: 'pointer'
+                    }}
+                      onClick={() => handlePhaseClick(phase)}
+                    >
+                      <Typography sx={{ 
+                        flexGrow: 1,
+                        fontWeight: 600,
+                        color: isHovered ? project.color : 'inherit'
+                      }}>
+                        {phase.name}
+                      </Typography>
+                      <ExpandMore sx={{ 
+                        color: isHovered ? project.color : '#9CA3AF',
+                        transform: isHovered ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.2s ease, color 0.2s ease'
+                      }} />
+                    </Box>
+
+                    {/* Timeline Columns */}
+                    <Box sx={{ 
+                      position: 'relative',
+                      flex: 1,
+                      display: 'flex',
+                      height: 60
+                    }}>
+                      {months.map((_, index) => (
+                        <Box key={index} sx={{
+                          flex: 1,
+                          minWidth: 80,
+                          borderRight: `1px solid ${theme.palette.divider}`
+                        }}></Box>
+                      ))}
+
+                      {/* Bars Container */}
+                      <Box sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                      }}>
+                        {/* Planned Bar */}
+                        {plannedPos && (
+                          <AnimatedBar
+                            color={`${project.color}40`}
+                            position={plannedPos}
+                            isActive={isHovered}
+                          />
+                        )}
+
+                        {/* Actual Bar */}
+                        {actualPos && (
+                          <AnimatedBar
+                            color={isBehind ? '#EF4444' : project.color}
+                            position={actualPos}
+                            isActive={isHovered}
+                          />
+                        )}
+
+                        {/* Current Month Indicator */}
+                        <Box sx={{
+                          position: 'absolute',
+                          top: 0,
+                          bottom: 0,
+                          left: `${(new Date().getMonth() / months.length) * 100}%`,
+                          width: '1px',
+                          bgcolor: '#EF4444',
+                          zIndex: 3
+                        }} />
+                      </Box>
+
+                      {/* Progress Indicator */}
+                      <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        right: 16,
+                        transform: 'translateY(-50%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        zIndex: 2
+                      }}>
+                        <StatusBadge status={isBehind ? 'behind' : phase.status} />
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.05, 1],
+                            opacity: [0.8, 1, 0.8]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Chip 
+                            label={`${phase.progress}%`} 
+                            size="small" 
+                            sx={{ 
+                              fontWeight: 700,
+                              bgcolor: '#FFFFFF',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                            }} 
+                          />
+                        </motion.div>
+                      </Box>
+                    </Box>
+                  </Box>
+                </motion.div>
+              );
+            })}
+          </Paper>
+        </motion.div>
+      ))}
+
+      {/* Phase Details Dialog */}
+      <Dialog 
+        open={openDialog} 
+        onClose={handleCloseDialog} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            overflow: 'hidden',
+            background: 'linear-gradient(120deg, #F9FAFB 0%, #F3F4F6 100%)'
+          }
+        }}
+      >
+        {selectedPhase && (
+          <>
+            <DialogTitle sx={{ 
+              bgcolor: `${projects.find(p => p.phases?.includes(selectedPhase))?.color || '#6366F1'}10`,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              py: 2
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+                  {selectedPhase.name}
+                </Typography>
+                <StatusBadge status={isBehindSchedule(selectedPhase) ? 'behind' : selectedPhase.status} />
+              </Box>
+              <Typography variant="subtitle2" sx={{ color: '#6B7280', mt: 0.5 }}>
+                {projects.find(p => p.phases.includes(selectedPhase))?.name}
+              </Typography>
+            </DialogTitle>
+            <DialogContent dividers sx={{ py: 3 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Paper sx={{ 
+                    p: 2, 
+                    borderRadius: 2,
+                    bgcolor: 'white',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                  }}>
+                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                      Timeline Comparison
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Box sx={{ 
+                        width: 16, 
+                        height: 8, 
+                        bgcolor: '#6366F140',
+                        borderRadius: 1,
+                        mr: 1
+                      }} />
+                      <Typography variant="body2">Planned: {selectedPhase.planned.start} - {selectedPhase.planned.end}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ 
+                        width: 16, 
+                        height: 8, 
+                        bgcolor: isBehindSchedule(selectedPhase) ? '#EF4444' : '#10B981',
+                        borderRadius: 1,
+                        mr: 1
+                      }} />
+                      <Typography variant="body2" color={isBehindSchedule(selectedPhase) ? 'error' : 'text.primary'}>
+                        Actual: {selectedPhase.actual.start} - {selectedPhase.actual.end || 'Ongoing'}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Paper sx={{ 
+                    p: 2, 
+                    borderRadius: 2,
+                    bgcolor: 'white',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                  }}>
+                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                      Progress
+                    </Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={selectedPhase.progress} 
+                      sx={{ 
+                        height: 8, 
+                        borderRadius: 4,
+                        mb: 1,
+                        bgcolor: '#E5E7EB',
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 4,
+                          bgcolor: isBehindSchedule(selectedPhase) ? '#EF4444' : '#10B981'
+                        }
+                      }}
+                    />
+                    <Typography variant="body2" sx={{ textAlign: 'right', fontWeight: 600 }}>
+                      {selectedPhase.progress}% complete
+                    </Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                  <Paper sx={{ 
+                    p: 2, 
+                    borderRadius: 2,
+                    bgcolor: 'white',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                  }}>
+                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                      Tasks
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {selectedPhase.tasks.map((task, index) => (
+                        <motion.div
+                          key={index}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Chip 
+                            label={task} 
+                            size="small" 
+                            sx={{ 
+                              bgcolor: '#F3F4F6',
+                              fontWeight: 500,
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                            }} 
+                          />
+                        </motion.div>
+                      ))}
+                    </Box>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions sx={{ p: 2, bgcolor: '#F9FAFB' }}>
+              <Button 
+                onClick={handleCloseDialog}
+                sx={{
+                  borderRadius: 2,
+                  px: 3,
+                  fontWeight: 600,
+                  textTransform: 'none'
+                }}
+              >
+                Close
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Box>
   );
 };
 
-export default ModernGanttDashboard;
+export default ProjectGanttDashboard;

@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
-  AppBar, Toolbar, Typography, Box, styled, useTheme, 
-  CssBaseline, Avatar, Badge, IconButton, Divider, useMediaQuery,
-  Menu, MenuItem, ListItemIcon, ListItemText, Button
+  AppBar, Toolbar, Typography, Box, styled, useTheme,
+  CssBaseline, Avatar, Badge, IconButton, Menu, MenuItem,
+  ListItemIcon, ListItemText, useMediaQuery, Divider, Tooltip, Button
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -12,400 +13,287 @@ import {
   Warning as WarningIcon,
   CheckCircle as SuccessIcon,
   Settings as SettingsIcon,
-  ArrowForward as ViewAllIcon
+  ArrowForward as ViewAllIcon,
+  Logout as LogoutIcon
 } from '@mui/icons-material';
-import VerticalTabs from './VerticalTabs';
-import MenuIcon from '@mui/icons-material/Menu';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import logo from '../images/StratView.svg';
+import MenuIcon from '@mui/icons-material/Menu';
+import VerticalTabs from './VerticalTabs';
 import { ThemeContext } from '../ThemeContext';
+import { motion } from 'framer-motion';
+import logo from '../images/nexovate.svg';
 
 const DashboardLayout = ({ children, activeTab, onTabChange }) => {
   const theme = useTheme();
+  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [userMenuEl, setUserMenuEl] = useState(null);
   const open = Boolean(anchorEl);
-  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
+  const userMenuOpen = Boolean(userMenuEl);
 
-  // Sample notifications data
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem('user')) || null
+  );
+
   const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: 'New message received',
-      description: 'You have 3 unread messages from your team',
-      icon: <MessageIcon color="primary" />,
-      time: '10 min ago',
-      read: false
-    },
-    {
-      id: 2,
-      title: 'Task completed',
-      description: 'Your project MBX has been approved',
-      icon: <TaskIcon color="success" />,
-      time: '1 hour ago',
-      read: false
-    },
-    {
-      id: 3,
-      title: 'System warning',
-      description: 'Server maintenance scheduled for tonight',
-      icon: <WarningIcon color="warning" />,
-      time: '3 hours ago',
-      read: true
-    },
-    {
-      id: 4,
-      title: 'Payment processed',
-      description: 'Your invoice #12345 has been paid',
-      icon: <SuccessIcon color="success" />,
-      time: '1 day ago',
-      read: true
-    }
+    { id: 1, title: 'New message', description: 'You have new messages.', icon: <MessageIcon />, time: '10 min ago', read: false },
+    { id: 2, title: 'Task completed', description: 'Project approved.', icon: <TaskIcon color="success" />, time: '1 hour ago', read: false },
+    { id: 3, title: 'Warning', description: 'Scheduled maintenance.', icon: <WarningIcon color="warning" />, time: '3 hours ago', read: true },
+    { id: 4, title: 'Payment received', description: 'Invoice #123 paid.', icon: <SuccessIcon color="success" />, time: '1 day ago', read: true }
   ]);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
 
-  const handleNotificationsClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    setIsLoggedIn(!!user);
+    if (!user) {
+      setUser(null);
+    }
+  }, []);
 
-  const handleNotificationsClose = () => {
-    setAnchorEl(null);
-  };
-
-  const markAsRead = (id) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(notification => ({
-      ...notification,
-      read: true
-    })));
+  const handleLogin = () => {
+    navigate('/admin/login');
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+  const handleNotificationsClick = (event) => setAnchorEl(event.currentTarget);
+  const handleNotificationsClose = () => setAnchorEl(null);
+  const handleUserMenuClick = (event) => setUserMenuEl(event.currentTarget);
+  const handleUserMenuClose = () => setUserMenuEl(null);
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    handleNotificationsClose();
+  };
+
+  const handleAdminNavigate = () => {
+    if (user?.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/'); // Redirect to home instead of login
+    handleUserMenuClose();
+  };
+
   const GlassAppBar = styled(AppBar)(({ theme }) => ({
     backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-    color: theme.palette.text.primary,
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(30,30,30,0.8)' : 'rgba(255,255,255,0.8)',
     boxShadow: theme.shadows[1],
     borderBottom: `1px solid ${theme.palette.divider}`,
-    zIndex: theme.zIndex.drawer + 1,
-    minHeight: 60, // Increased height for better fit
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 65,
-      paddingTop: theme.spacing(0.5),
-      paddingBottom: theme.spacing(0.5)
-    }
+    zIndex: theme.zIndex.drawer + 1
   }));
+
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      minHeight: '100vh',
-      backgroundColor: theme.palette.background.default
-    }}>
-    <CssBaseline />
-    <GlassAppBar position="fixed" elevation={0}>
-      <Toolbar
-        sx={{
-          minHeight: { xs: 65, sm: 55 },
-          paddingLeft: { xs: 1.5, sm: 3 },
-          paddingRight: { xs: 1.5, sm: 3 },
-          gap: { xs: 1, sm: 2 }
-        }}
-      >
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{
-            mr: 1,
-            display: { sm: 'none' },
-            color: theme.palette.primary.main
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: theme.palette.background.default }}>
+      <CssBaseline />
+      <GlassAppBar position="fixed">
+        <Toolbar>
+          <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ display: { sm: 'none' } }}>
+            <MenuIcon />
+          </IconButton>
 
-        {/* Logo, Title, and Subtitle Section */}
-        <Box
-          sx={{
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              alignItems: 'flex-start',
-              gap: isMobile ? 0.5 : 1.5,
-              flexGrow: 1
-              }}
-        >
-          {/* Logo block */}
-          <Box>
-            <img
-              src={logo}
-              alt="StratView Logo"
-              style={{
-                height: isMobile ? 28 : 36,
-                borderRadius: 8,
-                display: 'block'
-              }}
-            />
-          </Box>
+          <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center', gap: 1.5 }}>
+            <img src={logo} alt="Logo" style={{ height: 40, borderRadius: 8 }} />
 
-          {/* Title + Subtitle block */}
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center'
-            }}
-          >
-            <Typography
-              variant={isMobile ? 'h6' : 'h5'}
-              noWrap
-              component="div"
-              sx={{
-                fontWeight: 700,
-                fontFamily: `'Poppins', sans-serif`,
-                background: 'linear-gradient(135deg, #D4145A, #FBB03B)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                display: 'inline-block',
-                lineHeight: 1.2,
-                mb: 0.25 // Reduce space between title and subtitle
-              }}
-            >
-              InnoLabs
-            </Typography>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontFamily: `'Inter', sans-serif`,
-                  fontWeight: 300,
-                  fontSize: isMobile ? '0.6rem' : '0.7rem',
-                  color: theme.palette.mode === 'dark' ? '#CCCCCC' : '#666666',
-                  lineHeight: 1.2,
-                  maxWidth: isMobile ? '100%' : 500
-                }}
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+                style={{ display: 'inline-block' }}
+              >
+                <Typography
+                  variant={isMobile ? 'h6' : 'h5'}
+                  sx={{
+                    fontWeight: 700,
+                    fontFamily: `'Poppins', sans-serif`,
+                    background: 'linear-gradient(270deg, #0f62fe, #42be65, #0f62fe)',
+                    backgroundSize: '400% 400%',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    display: 'inline-block',
+                    lineHeight: 1.1,
+                    mb: 0.25,
+                    animation: 'gradientMove 8s ease infinite',
+                    transition: 'background-position 0.5s ease-in-out',
+                    cursor: 'pointer',
+                    
+                    '@keyframes gradientMove': {
+                      '0%': { backgroundPosition: '0% 50%' },
+                      '50%': { backgroundPosition: '100% 50%' },
+                      '100%': { backgroundPosition: '0% 50%' },
+                    }
+                  }}
+                  onClick={handleAdminNavigate}
+                >
+                  nexovate
+                </Typography>
+              </motion.div>
+
+              <Typography 
+                variant="caption" 
+                color="text.secondary" 
+                sx={{ mt: 0.1, fontSize: '0.72rem', lineHeight: 1}}
               >
                 A centralized view of departmental operations, built for executive insight.
               </Typography>
+            </Box>
           </Box>
-        </Box>
 
-        {/* Controls Section */}
-        <Box
-          sx={{
-            display: 'flex',
-            position: 'relative',
-            alignItems: 'center',
-            gap: 1
-          }}
-        >
-          <IconButton onClick={toggleDarkMode} color="inherit" size={isMobile ? 'small' : 'medium'}>
-            {darkMode ? (
-              <Brightness7Icon fontSize={isMobile ? 'small' : 'medium'} />
-            ) : (
-              <Brightness4Icon fontSize={isMobile ? 'small' : 'medium'} />
-            )}
+          <IconButton
+            onClick={toggleDarkMode}
+            sx={{
+              color: theme.palette.mode === 'dark' ? '#fff' : '#333'
+            }}
+          >
+            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
 
           <IconButton
-            color="inherit"
-            size={isMobile ? 'small' : 'medium'}
             onClick={handleNotificationsClick}
-            aria-controls={open ? 'notification-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
+            sx={{
+              color: theme.palette.mode === 'dark' ? '#fff' : '#333'
+            }}
           >
-            <Badge badgeContent={unreadCount} color="error" size={isMobile ? 'small' : 'medium'}>
-              <NotificationsIcon fontSize={isMobile ? 'small' : 'medium'} />
+            <Badge
+              badgeContent={unreadCount}
+              color="error"
+              overlap="circular"
+            >
+              <NotificationsIcon />
             </Badge>
           </IconButton>
 
           <Menu
             anchorEl={anchorEl}
-            id="notification-menu"
             open={open}
             onClose={handleNotificationsClose}
-            onClick={handleNotificationsClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             PaperProps={{
-              elevation: 0,
+              elevation: 4,
               sx: {
-                overflow: 'visible',
-                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                mt: 1.5,
-                width: 350,
-                maxWidth: '100%',
-                maxHeight: '80vh',
-                overflowY: 'auto',
-                '& .MuiAvatar-root': {
-                  width: 32,
-                  height: 32,
-                  ml: -0.5,
-                  mr: 1
-                },
-                '&:before': {
-                  content: '""',
-                  display: 'block',
-                  position: 'absolute',
-                  top: 0,
-                  right: 14,
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translateY(-50%) rotate(45deg)',
-                  zIndex: 0
-                }
+                mt: 1,
+                minWidth: 280,
+                backgroundColor: theme.palette.background.paper,
+                borderRadius: 2
               }
             }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Notifications
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {unreadCount} new notifications
-              </Typography>
-            </Box>
-
-            <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
-              {notifications.length > 0 ? (
-                notifications.map((notification) => (
-                  <MenuItem
-                    key={notification.id}
-                    sx={{
-                      backgroundColor: !notification.read
-                        ? theme.palette.action.selected
-                        : 'inherit',
-                      borderLeft: !notification.read
-                        ? `3px solid ${theme.palette.primary.main}`
-                        : 'none',
-                      py: 1.5,
-                      px: 2
-                    }}
-                    onClick={() => markAsRead(notification.id)}
-                  >
-                    <ListItemIcon sx={{ minWidth: 40 }}>{notification.icon}</ListItemIcon>
-                    <ListItemText
-                      primary={notification.title}
-                      secondary={
-                        <>
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                            display="block"
-                          >
-                            {notification.description}
-                          </Typography>
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            color="text.secondary"
-                          >
-                            {notification.time}
-                          </Typography>
-                        </>
-                      }
-                    />
-                  </MenuItem>
-                ))
-              ) : (
-                <Box sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No new notifications
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-
-            <Box
-              sx={{
-                p: 1,
-                borderTop: `1px solid ${theme.palette.divider}`,
-                display: 'flex',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Button
-                size="small"
-                startIcon={<SettingsIcon />}
-                onClick={() => {
-                  handleNotificationsClose();
-                }}
+            {notifications.map((n) => (
+              <MenuItem
+                key={n.id}
+                onClick={() => setNotifications(notifications.map(no => no.id === n.id ? { ...no, read: true } : no))}
               >
-                Settings
-              </Button>
-              <Button
-                size="small"
-                endIcon={<ViewAllIcon />}
-                onClick={() => {
-                  markAllAsRead();
-                  handleNotificationsClose();
-                }}
-              >
-                View All
-              </Button>
-            </Box>
+                <ListItemIcon sx={{ minWidth: 36 }}>{n.icon}</ListItemIcon>
+                <ListItemText primary={n.title} secondary={n.description} />
+              </MenuItem>
+            ))}
+            <Divider />
+            <MenuItem onClick={markAllAsRead}>
+              <ListItemIcon><ViewAllIcon /></ListItemIcon>
+              <ListItemText primary="Mark all as read" />
+            </MenuItem>
           </Menu>
 
           {!isMobile && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                padding: '4px 8px',
-                borderRadius: '12px',
-                backgroundColor:
-                  theme.palette.mode === 'dark'
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(0, 0, 0, 0.05)',
-                border: `1px solid ${theme.palette.divider}`
-              }}
-            >
-              <Avatar
-                sx={{
-                  width: 30,
-                  height: 30,
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
-                  fontWeight: 600
-                }}
-              >
-                A
-              </Avatar>
-              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                Admin User
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1 }}>
+              {isLoggedIn ? (
+                <>
+                  <Tooltip title="Account settings">
+                    <IconButton onClick={handleUserMenuClick} size="small">
+                      <Avatar
+                        sx={{
+                          bgcolor: theme.palette.primary.main,
+                          color: theme.palette.primary.contrastText,
+                          width: 32,
+                          height: 32,
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        {user?.name?.charAt(0) || 'A'}
+                      </Avatar>
+                    </IconButton>
+                  </Tooltip>
+                  
+                  <Menu
+                    anchorEl={userMenuEl}
+                    open={userMenuOpen}
+                    onClose={handleUserMenuClose}
+                    PaperProps={{
+                      elevation: 3,
+                      sx: {
+                        minWidth: 180,
+                        mt: 1.5,
+                      },
+                    }}
+                  >
+                    {user?.role === 'admin' && (
+                      <MenuItem onClick={handleAdminNavigate}>
+                        <ListItemIcon>
+                          <AdminPanelSettingsIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>Admin Panel</ListItemText>
+                      </MenuItem>
+                    )}
+                    <Divider />
+                    <MenuItem onClick={handleLogout}>
+                      <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Logout</ListItemText>
+                    </MenuItem>
+                  </Menu>
+
+                  <Typography variant="subtitle2" sx={{ color: theme.palette.text.primary }}>
+                    {user?.name || 'User'}
+                  </Typography>
+                  {user?.role === 'admin' && (
+                    <AdminPanelSettingsIcon
+                      fontSize="small"
+                      sx={{ color: theme.palette.primary.main, cursor: 'pointer' }}
+                      onClick={handleAdminNavigate}
+                    />
+                  )}
+                </>
+              ) : (
+                <Button 
+                  variant="contained" 
+                  size="small"
+                  onClick={handleLogin}
+                  sx={{
+                    ml: 1,
+                    px: 2,
+                    textTransform: 'none',
+                    borderRadius: 2
+                  }}
+                >
+                  Login
+                </Button>
+              )}
             </Box>
           )}
-        </Box>
-      </Toolbar>
-    </GlassAppBar>
-      
-      <Box 
-        component="nav"
-        sx={{
-          width: { sm: 200 },
-          flexShrink: { sm: 0 },
-          zIndex: theme.zIndex.drawer,
-        }}
-      >
-        <VerticalTabs 
+        </Toolbar>
+      </GlassAppBar>
+
+      <Box component="nav" sx={{ width: { sm: 200 }, flexShrink: { sm: 0 } }}>
+        <VerticalTabs
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
           activeTab={activeTab}
@@ -413,52 +301,12 @@ const DashboardLayout = ({ children, activeTab, onTabChange }) => {
         />
       </Box>
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: { xs: 1, sm: 2 },
-          width: { sm: `calc(100% - 200px)` },
-          marginLeft: { sm: '30px' },
-          marginTop: '64px',
-          minHeight: 'calc(100vh - 64px)',
-          display: 'flex',
-          flexDirection: 'column',
-          maxWidth: '100%',
-          overflowX: 'hidden'
-        }}
-      >
-        <Box sx={{ 
-          flex: 1, 
-          mb: 1,
-          width: '100%',
-          maxWidth: '100%',
-          overflowX: 'auto'
-        }}>
-          {children}
-        </Box>
-        
+      <Box component="main" sx={{ flexGrow: 1, p: 2, width: { sm: `calc(100% - 200px)` }, mt: 8 }}>
+        {children}
+
         {!isMobile && (
-          <Box 
-            component="footer"
-            sx={{ 
-              mt: 'auto',
-              py: 1,
-              px: 2,
-              textAlign: 'center',
-              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-              borderRadius: '12px',
-              boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)',
-              borderTop: `1px solid ${theme.palette.divider}`,
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          >
-            <Typography variant="caption" sx={{ 
-              color: 'text.secondary',
-              fontSize: '0.75rem',
-              fontWeight: 500
-            }}>
+          <Box component="footer" sx={{ mt: 2, py: 2, textAlign: 'center', borderTop: `1px solid ${theme.palette.divider}`, backdropFilter: 'blur(8px)' }}>
+            <Typography variant="caption" color="text.secondary">
               © {new Date().getFullYear()} AYA Bank - All rights reserved
             </Typography>
           </Box>

@@ -5,6 +5,7 @@ import ProjectStatusCards from '../components/ProjectStatusCards';
 import MilestoneGantt from '../components/MilestoneGantt';
 import ProjectProgressTable from '../components/ProjectProgressTable';
 import BudgetVsActual from '../components/BudgetVsActual';
+import BudgetVsProject from '../components/BudgetVsProject';
 import ResourceUtilization from '../components/ResourceUtilization';
 import SettingPage from '../components/SettingPage';
 import { Box, Paper, useTheme, useMediaQuery } from '@mui/material';
@@ -29,7 +30,8 @@ const Dashboard = () => {
     <ProjectStatusCards key="overview" />,
     <MilestoneGantt key="milestones" />,
     <ProjectProgressTable key="progress" />,
-    <BudgetVsActual key="budget" />,
+    <BudgetVsActual key="budget (Dept)" />,
+    <BudgetVsProject key="budget (Project)" />,
     <ResourceUtilization key="resources" />,
     <SettingPage key="settingpage" />
     ];

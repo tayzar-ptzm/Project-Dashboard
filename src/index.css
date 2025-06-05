@@ -11,6 +11,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #F8F9FA;
+  color: #1A202C;
 }
 
 body.dark-mode {
@@ -18,20 +19,11 @@ body.dark-mode {
   color: #EDF2F7;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.container {
-  width: 100%;
-  max-width: var(--max-content-width);
-  margin: 0 auto;
-  padding: 0 24px;
+/* Gradient effect for headings */
+h1, h2 {
+  background: linear-gradient(to right, #1E90FF, #32CD32); /* Blue to Green */
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 /* Smooth transitions for theme switching */
@@ -72,4 +64,21 @@ body.dark-mode ::-webkit-scrollbar-thumb {
 
 body.dark-mode ::-webkit-scrollbar-thumb:hover {
   background: #718096;
+}
+
+/* Additional styling for a clean and neat layout */
+.container {
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }

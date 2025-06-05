@@ -4,12 +4,12 @@ import { createTheme } from '@mui/material/styles';
 const baseTheme = {
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: { fontSize: '2rem', fontWeight: 600 },
-    h2: { fontSize: '1.75rem', fontWeight: 600 },
-    h3: { fontSize: '1.5rem', fontWeight: 500 },
-    h4: { fontSize: '1.25rem', fontWeight: 500 },
-    h5: { fontSize: '1.125rem', fontWeight: 500 },
-    h6: { fontSize: '1rem', fontWeight: 600 },
+    h1: { fontSize: '2rem', fontWeight: 500, background: 'linear-gradient(to right, #1E90FF, #32CD32)', WebkitBackgroundClip: 'text', color: 'transparent' },
+    h2: { fontSize: '1.75rem', fontWeight: 500, background: 'linear-gradient(to right, #1E90FF, #32CD32)', WebkitBackgroundClip: 'text', color: 'transparent' },
+    h3: { fontSize: '1.5rem', fontWeight: 400 },
+    h4: { fontSize: '1.25rem', fontWeight: 400 },
+    h5: { fontSize: '1.125rem', fontWeight: 400 },
+    h6: { fontSize: '1rem', fontWeight: 500 },
     subtitle1: { fontSize: '0.8125rem', fontWeight: 400 },
     body1: { fontSize: '0.9375rem', fontWeight: 400 },
     body2: { fontSize: '0.8125rem', fontWeight: 400 },
